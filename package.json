@@ -1,0 +1,14 @@
+{
+  "name": "blogpages",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "deploy": "wrangler deploy",
+    "dev": "wrangler dev",
+    "start": "wrangler dev",
+    "build": "bundle exec jekyll build"
+  },
+  "devDependencies": {
+    "wrangler": "^4.79.0"
+  }
+}
