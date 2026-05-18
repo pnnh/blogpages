@@ -1,0 +1,115 @@
+---
+layout: post
+title: "Cloudflare Worker 中 D1 数据库绑定错误排查：D1 binding 'DB' not found in environment"
+date: 2026-05-18 00:00:00 +0800
+categories: [其它]
+tags: [cloudflare, workers, d1, wrangler]
+---
+
+= Cloudflare Worker 中 D1 数据库绑定错误排查：`D1 binding 'DB' not found in environment`
+
+在使用 Cloudflare Workers + D1 数据库时，部署到生产环境后经常遇到以下错误：
+
+[quote]
+Failed to list users: Error: D1 binding 'DB' not found in environment
+
+本地 `wrangler dev` 通常能正常运行，但部署后 `env.DB` 为 `undefined`，导致 Worker 无法访问数据库。这是一个典型的**配置同步问题**，很少是 D1 服务本身故障。
+
+== 错误核心原因
+
+Cloudflare Worker 的运行时（边缘环境）需要通过 **binding** 机制显式注入 D1 数据库实例。如果绑定未正确配置或未随 Worker 一起部署，`env.DB` 就会缺失。该错误在以下场景中最常见：
+
+=== 1. wrangler.toml 配置缺失或错误（最常见）
+
+`wrangler.toml` 中必须正确定义 `[[d1_databases]]` 块，且 `binding` 名称与代码中使用的完全一致。
+
+.正确配置示例
+[source,toml]
+----
+[[d1_databases]]
+binding = "DB"                    # 必须与代码中的 env.DB 一致
+database_name = "my-production-db"
+database_id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"  # 从 wrangler d1 list 获取
+----
+
+**常见配置错误：**
+
+* 缺少 `database_id`
+* `binding` 名称大小写不匹配（`db` vs `DB`）
+* 多环境（`[env.production]`）下未为对应环境配置 D1
+
+=== 2. Dashboard 与 wrangler 配置不同步
+
+* 在 Cloudflare Dashboard 的 Workers → Settings → Bindings 中手动添加了 D1，但 `wrangler deploy` 会以 `wrangler.toml` 为准进行覆盖。
+* 反之亦然：仅在 Dashboard 配置，未提交到 toml 文件。
+
+**最佳实践**：优先通过 `wrangler.toml` 统一管理配置，Dashboard 仅用于查看。
+
+=== 3. 代码访问方式不正确
+
+确保在 Worker 入口文件中正确接收 `env` 参数：
+
+[source,typescript]
+----
+export interface Env {
+  DB: D1Database;   // 类型定义必须匹配
+}
+
+export default {
+  async fetch(request: Request, env: Env) {
+    if (!env.DB) {
+      return new Response("D1 binding 'DB' not found in environment", { status: 500 });
+    }
+    // 使用示例
+    const { results } = await env.DB.prepare("SELECT * FROM users").all();
+    return Response.json(results);
+  }
+};
+----
+
+=== 4. 其他边缘情况
+
+* 使用 Cloudflare Pages Functions 时，绑定配置位置不同。
+* `wrangler` 版本过旧或 `compatibility_date` 设置较早。
+* 多 Worker / Service Binding 场景下 D1 只绑定到特定 Worker。
+* 部署缓存问题：偶尔需要删除 Worker 后重新部署。
+
+== 完整排查与修复流程
+
+. 检查配置文件 +
+   运行 `wrangler d1 list` 获取正确的 `database_id`，确认 `wrangler.toml` 配置无误。
+
+. 本地验证
+[source,bash]
+----
+wrangler dev
+----
+   若本地正常，问题基本出在部署配置。
+
+. 重新部署
+[source,bash]
+----
+wrangler deploy --env production   # 指定环境
+----
+
+. Dashboard 验证 +
+   登录 Cloudflare Dashboard → Workers & Pages → 你的 Worker → Settings → Bindings，确认存在名称为 `DB` 的 D1 binding。
+
+. 生成类型定义（TypeScript 项目）
+[source,bash]
+----
+wrangler types
+----
+
+. 清理重试 +
+   若仍失败，可删除 Worker 后重新 `wrangler deploy`。
+
+== 预防措施与最佳实践
+
+* 始终保持 `wrangler.toml` 为配置唯一来源。
+* 使用多环境时，为每个 environment 单独配置 D1 binding。
+* 部署后立即查看 Worker Logs，快速定位 `env` 对象是否正确注入。
+* 定期更新 `wrangler` 到最新版本，并设置较新的 `compatibility_date`。
+* 在代码中增加绑定存在性检查，提升容错性。
+
+这个错误本质上是 **开发环境与生产环境配置脱节** 的典型表现。掌握 `wrangler.toml` 的正确写法并养成统一管理的习惯后，大多数 D1 绑定相关问题都能迎刃而解。

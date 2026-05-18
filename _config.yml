@@ -34,6 +34,19 @@ plugins:
   - jekyll-sitemap
   - jekyll-paginate
   - jekyll-archives
+  - jekyll-asciidoc
+
+# AsciiDoc support
+asciidoc:
+  processor: asciidoctor
+  ext: adoc,asciidoc
+  page_attribute_prefix: page
+  require_front_matter_header: false
+asciidoctor:
+  safe: unsafe
+  attributes:
+    source-highlighter: rouge
+    icons: font
 
 # Theme appearance
 theme_mode: light   # [light | dark]
