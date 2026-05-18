@@ -1,0 +1,38 @@
+_plugins/rst_converter.rb
+  h_6465a203f88bd5 28,30
+  s_9c58b9ee9e22ac::t_e36be5d1db70f1 1,3-4,10-22,52-54,56,69,72-74
+  s_9c58b9ee9e22ac::t_91786e5a2db881 2,5-9,23-27,29,31-51,55,57-68,70-71
+.gitignore
+  h_6465a203f88bd5 161
+_posts/其它/2026-05-18-SpaceX-xAI-orbital-datacenter.rst
+  h_6465a203f88bd5 1-77
+README.md
+  h_6465a203f88bd5 1-120
+Gemfile
+  s_9c58b9ee9e22ac::t_1586c785957f7c 20
+_posts/其它/2026-05-18-Cloudflare-Worker-D1-binding-DB-not-found.adoc
+  s_9c58b9ee9e22ac::t_b95fdd124f69f7 1-115
+_config.yml
+  s_9c58b9ee9e22ac::t_bb7b661eb1b428 37-49
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.9",
+  "base_commit_sha": "1a997eee8dfd50889453bcc3d528a4eacee99e79",
+  "prompts": {},
+  "humans": {
+    "h_6465a203f88bd5": {
+      "author": "larry <xspanni@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_9c58b9ee9e22ac": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "1ccafd46-73fb-4051-9d65-4891dce29158",
+        "model": "gpt-4.1"
+      },
+      "human_author": "larry <xspanni@gmail.com>"
+    }
+  }
+}
