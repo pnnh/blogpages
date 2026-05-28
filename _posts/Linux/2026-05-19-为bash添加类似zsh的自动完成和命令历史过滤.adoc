@@ -1,0 +1,126 @@
+---
+layout: post
+title: "为Bash添加类似Zsh的自动完成和命令历史过滤"
+date: 2026-05-19 00:00:00 +0800
+categories: [Linux]
+tags: [bash, zsh, linux, shell]
+---
+
+如何在 Ubuntu 26.04 上使用 Bash 时获得类似 Zsh 的自动补全和高亮功能？本文介绍最推荐的方案：安装 `ble.sh` (Bash Line Editor)，以及其他增强 Bash 体验的方法。
+
+== 1. 推荐方案：安装 ble.sh (最接近 Zsh 体验)
+
+`ble.sh` 是一个纯 Bash 实现的行编辑器，能完全替换 GNU Readline，提供类似 Fish/Zsh 的实时语法高亮、自动建议、增强补全和 Vi 模式，性能优异。
+
+=== 安装步骤
+推荐使用 Git 方式进行安装，方便后续更新。
+
+. *安装依赖*
++
+[source,bash]
+----
+sudo apt update
+sudo apt install git make gawk
+----
+
+. *克隆并安装到系统* (推荐安装到 `~/.local`)
++
+[source,bash]
+----
+git clone --recursive --depth 1 --shallow-submodules https://github.com/akinomyoga/ble.sh.git
+make -C ble.sh install PREFIX=~/.local
+----
+
+. *启用 ble.sh*
+将以下内容添加到 your `~/.bashrc` 中：
++
+[source,bash]
+----
+echo 'source ~/.local/share/blesh/ble.sh' >> ~/.bashrc
+----
+
+. *重新加载配置*
++
+[source,bash]
+----
+source ~/.bashrc
+----
+
+=== 功能亮点
+* *语法高亮*：根据命令有效性、引号、子命令等实时高亮（红色表示错误，绿色正确）。
+* *增强自动补全*：支持菜单式补全（箭头/TAB 导航）、自动建议、模糊匹配、历史/路径智能补全。
+* *其他*：内置增强版 Vi 模式、状态栏、历史共享、右提示等。可通过交互式命令或编辑 `~/.blerc` 高度自定义。
+
+=== 更新与维护
+* 在 `ble.sh` 会话中运行 `ble-update`
+* 卸载：删除 `~/.local/share/blesh` 并移除 `~/.bashrc` 中的 source 行。
+
+== 2. 基础增强：启用系统 bash-completion
+
+Ubuntu 默认包含较好的补全支持。确保已安装 `bash-completion`。
+
+[source,bash]
+----
+sudo apt install bash-completion
+----
+
+确保 `~/.bashrc` 中包含以下逻辑（Ubuntu 默认通常已包含）：
+
+[source,bash]
+----
+if ! shopt -oq posix; then
+  if [ -f /usr/share/bash-completion/bash_completion ]; then
+    . /usr/share/bash-completion/bash_completion
+  elif [ -f /etc/bash_completion ]; then
+    . /etc/bash_completion
+  fi
+fi
+----
+
+== 3. 历史过滤与搜索优化
+
+Zsh 的一个强大功能是输入部分命令后按上下键过滤历史，Bash 也可以通过以下方式实现。
+
+=== 使用 ble.sh (推荐)
+`ble.sh` 默认已支持此行为：
+* 输入前缀后按 ↑/↓ 自动进行前缀过滤并支持高亮。
+* 可在 `~/.blerc` 中设置 `bleopt history_search_mode=prefix` 进一步微调。
+
+=== 完善 ~/.bashrc 历史设置
+建议在 `~/.bashrc` 中添加以下配置以获得更好的体验：
+
+[source,bash]
+----
+# 历史记录设置
+export HISTSIZE=10000
+export HISTFILESIZE=20000
+export HISTCONTROL=ignoreboth:erasedups   # 去重并忽略空格开头的命令
+export HISTIGNORE="ls:ll:cd:cd -:pwd:exit:clear"  # 忽略常用命令
+shopt -s histappend                       # 多终端并发追加历史
+shopt -s cmdhist                          # 多行命令保存为一行
+
+# 立即保存历史到文件（实现多终端共享）
+PROMPT_COMMAND="history -a; $PROMPT_COMMAND"
+----
+
+== 4. 其他进阶工具
+
+* *fzf + Ctrl+R*：目前最强大的模糊搜索历史方案。
++
+[source,bash]
+----
+sudo apt install fzf
+# 在 ~/.bashrc 中添加 (取决于发行版路径)
+source /usr/share/doc/fzf/examples/key-bindings.bash
+----
+
+* *Atuin*：现代化的 Shell 历史管理工具，基于 SQLite，支持跨设备同步和极速搜索。
+* *Oh My Bash / Bash-it*：类似于 Oh My Zsh 的框架，提供丰富的主题和插件系统。
++
+[source,bash]
+----
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh)"
+----
+
+== 总结
+通过安装 `ble.sh` 并配合 `fzf` 等工具，Bash 的交互体验可以达到 Zsh 的 90% 以上，同时保持了原生 Bash 的兼容性和稳定性。
