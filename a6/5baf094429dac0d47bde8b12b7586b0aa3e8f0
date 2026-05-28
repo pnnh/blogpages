@@ -1,0 +1,35 @@
+_posts/Linux/2026-05-19-为bash添加类似zsh的自动完成和命令历史过滤.adoc
+  s_2cb53ea5caab2f::t_c5ed14fa305ae1 1-126
+_posts/Cloud/2026-05-28-cloudflare-r2-10w-images-upload-guide.md
+  s_f59d4d53aab01d::t_5e376db2786f11 1-13,15-181
+  h_6465a203f88bd5 14
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "a65baf094429dac0d47bde8b12b7586b0aa3e8f0",
+  "prompts": {},
+  "humans": {
+    "h_6465a203f88bd5": {
+      "author": "larry <xspanni@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_2cb53ea5caab2f": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "9f13d926-0a62-4464-bce6-8ca7343be4c2",
+        "model": "gpt-4.1"
+      },
+      "human_author": "larry <xspanni@gmail.com>"
+    },
+    "s_f59d4d53aab01d": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "97f8e1fa-2410-4fd1-ae64-95cd550dda80",
+        "model": "gpt-4.1"
+      },
+      "human_author": "larry <xspanni@gmail.com>"
+    }
+  }
+}
