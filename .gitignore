@@ -204,3 +204,4 @@ temp/
 # 生产配置
 _config_production.yml
 
+.obsidian/
