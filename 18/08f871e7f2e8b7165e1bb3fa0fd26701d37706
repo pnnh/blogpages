@@ -1,0 +1,24 @@
+_posts/Linux/2026-11-19-rsync常用操作.md
+  h_6465a203f88bd5 1-213
+.gitignore
+  h_6465a203f88bd5 207
+_posts/Cloud/2026-09-21-cloudflare-workers-wrangler-deploy-guide.md
+  h_6465a203f88bd5 1-1031
+_posts/Cloud/2026-09-21-d1-migrations-apply-conflict-guide.md
+  h_6465a203f88bd5 1-488
+_posts/Database/2026-03-24-sqlite.md
+  h_6465a203f88bd5 1-208
+_posts/其它/2026-09-23-emacs-newbie-shortcuts.md
+  h_6465a203f88bd5 1-578
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "1808f871e7f2e8b7165e1bb3fa0fd26701d37706",
+  "prompts": {},
+  "humans": {
+    "h_6465a203f88bd5": {
+      "author": "larry <xspanni@gmail.com>"
+    }
+  }
+}
